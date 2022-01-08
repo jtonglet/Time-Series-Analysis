@@ -1,11 +1,11 @@
 #############################################################
-### R script for Advanced Time Series  Analysis Homework ###
-###             Jonathan Tonglet - R0827509              ###
+### R code for Advanced Time Series  Analysis Homework   ###
+###                    Jonathan Tonglet                  ###
 ###            Professor : Christophe Croux              ###
 ############################################################
 
 
-#Load required libraries
+#Load  libraries
 library(ggplot2)
 library(forecast)
 library(CADFtest)
@@ -23,45 +23,63 @@ dim(app)
 ### Part 1 : Univariate analysis ####
 #####################################
 
-#Create a time series (TS) object for the number of new users  per hour
-#First observation in the dataset on the 22th of December at 9 A.M.
-new_users_ts <- ts(newusers, frequency = 24, start = c(22,9))
+
+#Create a time series (TS) object representing the number of new users  per hour
+#First observation : 22th of December at 9 A.M.
+new_users_ts <- ts(newusers, 
+                   frequency = 24,
+                   start = c(22,9))
+
 plot.ts(new_users_ts)
 
-#Plot the correlogram of the TS
-ggAcf(new_users_ts) #The TS seems not stationary. It shows a seasonal pattern.
+#Plot the correlogram 
+ggAcf(new_users_ts) #The TS seems not stationary. It shows a clear seasonal pattern.
 
 #Perform the unit root test for stationarity
-max.lag <- round(sqrt(length(new_users_ts))) #13
-CADFtest(new_users_ts, type = "drift", criterion = "BIC", max.lag.y = max.lag)
-#The TS is not stationary
+max.lag <- round(sqrt(length(new_users_ts))) 
+CADFtest(new_users_ts,
+         type = "drift", 
+         criterion = "BIC", 
+         max.lag.y = max.lag) #The TS is not stationary.
+
 
 #Perform the Ljung-Box test for white noise
-Box.test(new_users_ts,  lag = 15, type = "Ljung-Box")
-#Strong evidence that the TS is not white noise
+Box.test(new_users_ts,  
+         lag = 15, 
+         type = "Ljung-Box")  #Strong evidence that the TS is not white noise
 
-#Plot the seasonal and month plots
+
+#Plot the month and seasonal plots
 ggmonthplot(x= new_users_ts) +
   ggtitle("Monthplot") +xlab("Hour")
 
-ggseasonplot(x = new_users_ts,  year.labels = TRUE, continuous = TRUE) + 
+ggseasonplot(x = new_users_ts,  
+             year.labels = 
+             TRUE, continuous = TRUE) + 
   ggtitle("Seasonal plot") + xlab("Hour")
 
 
-#To make the TS stationary, we go into seasonal differences
+#Apply the seasonal differences operator to make the TS stationary
 #The seasonal pattern repeats itself every day (= every 24 hours)
-snew_users_ts <- diff(new_users_ts, lag = 24) 
+snew_users_ts <- diff(new_users_ts, 
+                      lag = 24) 
 plot.ts(snew_users_ts)
 
 
 #Perform the unit root test for stationarity
-max.lag <- round(sqrt(length(snew_users_ts))) #12
-CADFtest(snew_users_ts, type = "drift", criterion = "BIC", max.lag.y = max.lag)
-#We reject that the TS in seasonal differences has a unit root
+max.lag <- round(sqrt(length(snew_users_ts))) 
+
+CADFtest(snew_users_ts, 
+         type = "drift", 
+         criterion = "BIC", 
+         max.lag.y = max.lag) #We reject that the TS in seasonal differences has a unit root.
+
 
 #Perform the Ljung-Box test for white noise
-Box.test(snew_users_ts, lag = 15, type = "Ljung-Box")
-#We do not reject that the TS is white noise 
+Box.test(snew_users_ts, 
+         lag = 15,
+         type = "Ljung-Box") #We do not reject that the TS is white noise.
+
 
 
 
