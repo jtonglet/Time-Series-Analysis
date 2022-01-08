@@ -9,5 +9,7 @@ The dataset consists of four time series describing the number of active users, 
 The repository contains the following files :
 
 1.Time_series.pdf : A slide deck with detailed explanations of the analysis.
+
 2.Time_series.R :  The R code.
+
 3.dataset.csv : The full dataset, retrieved from  [Kaggle](https://www.kaggle.com/wolfgangb33r/usercount).
