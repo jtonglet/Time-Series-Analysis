@@ -1,4 +1,4 @@
-# App usage Time Series Analysis  
+# App usage Time Series Analysis   📱📈📉
 
 
 Project realised for the KULeuven course [Advanced Time Series Analysis](https://onderwijsaanbod.kuleuven.be/syllabi/e/D0M63BE.htm#activetab=doelstellingen_idp133344) given by Professor Christophe Croux.
