@@ -4,7 +4,6 @@
 ###            Professor : Christophe Croux              ###
 ############################################################
 
-
 #Load  libraries
 library(ggplot2)
 library(forecast)
@@ -21,11 +20,9 @@ attach(app)
 dim(app)
 
 
-
 #####################################
 ### Part 1 : Univariate analysis ####
 #####################################
-
 
 #Create a time series (TS) object representing the number of new users  per hour
 #First observation : 22th of December at 9 A.M.
@@ -45,12 +42,10 @@ CADFtest(new_users_ts,
          criterion = "BIC", 
          max.lag.y = max.lag) #The TS is not stationary.
 
-
 #Perform the Ljung-Box test for white noise
 Box.test(new_users_ts,  
          lag = 15, 
          type = "Ljung-Box")  #Strong evidence that the TS is not white noise
-
 
 #Plot the month and seasonal plots
 ggmonthplot(x= new_users_ts) +
@@ -61,13 +56,11 @@ ggseasonplot(x = new_users_ts,
              TRUE, continuous = TRUE) + 
   ggtitle("Seasonal plot") + xlab("Hour")
 
-
 #Apply the seasonal differences operator to make the TS stationary
 #The seasonal pattern repeats itself every day (= every 24 hours)
 snew_users_ts <- diff(new_users_ts, 
                       lag = 24) 
 plot.ts(snew_users_ts)
-
 
 #Perform the unit root test for stationarity
 max.lag <- round(sqrt(length(snew_users_ts))) 
@@ -77,13 +70,10 @@ CADFtest(snew_users_ts,
          criterion = "BIC", 
          max.lag.y = max.lag) #We reject that the TS in seasonal differences has a unit root.
 
-
 #Perform the Ljung-Box test for white noise
 Box.test(snew_users_ts, 
          lag = 15,
          type = "Ljung-Box") #We do not reject that the TS is white noise.
-
-
 
 
 #ARIMA models
@@ -91,7 +81,6 @@ Box.test(snew_users_ts,
 #Model specification 
 ggAcf(snew_users_ts)  #AR(1) with one seasonal repetition at lag 24
 ggPacf(snew_users_ts) #MA(1) with one seasonal repetition at lag 24
-
 
 #We estimate three different models based on those specification
 
@@ -118,7 +107,6 @@ model3
 
 #Model 2 and 3 are kept for validation
 
-
 #Model validation
 res2<- model2$residuals #residuals
 
@@ -138,20 +126,15 @@ Box.test(res3,
          type = "Ljung-Box") #Residuals are white noise
 #Model3 is valid
 
-
 #Models comparison (BIC)
 AIC(model2, k = log(145)) #806.4
 AIC(model3, k = log(145)) #819.6
 #The model 2, SARIMA(1,0,1)(0,0,1) is preferred
 
 
-
-
-
 #####################################
 ###    Part 2 : Forecasting      ####
 #####################################
-
 
 #We make forecasts of the number of new users for the next 24 hours 
 
@@ -187,8 +170,6 @@ forecast(new_users_ts, model2, 24)
 
 #Forecasts with model 2
 forecast(new_users_ts, model3, 24)
-
-
 
 
 #Computing forecast error with expanding window approach
@@ -231,10 +212,6 @@ dm.test(error2.h,error3.h, h = 1, power = 1)
 # Model 2 and model 3 performances are not significantly different
 
 
-
-
-
-
 ########################################
 ###  Part 3 : Multivariate analysis  ###
 ########################################
@@ -261,14 +238,10 @@ CADFtest(active_users_ts,
          criterion = "BIC",  
          max.lag.y = max.lag)   #Strong evidence that the TS is not stationary
 
-
 #Perform the Ljung-Box test for white noise
 Box.test(active_users_ts,  
          lag = 15, 
          type = "Ljung-Box") #Strong evidence that the TS is not white noise
-
-
-
 
 #To make the TS stationary, we go into difference and seasonal differences
 #The seasonal pattern repeats itself every day (= every 24 hours)
@@ -289,9 +262,6 @@ Box.test(dsactive_users_ts,
          lag = 15, 
          type = "Ljung-Box")  #The TS is not white noise
 
-
-
-
 #Multivariate model : Autoregressive DLM of order 2
 lag <- 2
 n <- length(snew_users_ts)
@@ -302,11 +272,9 @@ dsX.1 <- dsactive_users_ts[lag:(n-1)]
 sY.2 <- snew_users_ts[(lag-1):(n-2)]
 dsX.2 <-  dsactive_users_ts[(lag-1):(n-2)]
 
-
 fit_adlm <- lm(sY.0 ~  dsX.1 + dsX.2 + sY.1 + sY.2)
 summary(fit_adlm)
 #X.1 and Y.1 are significant, X.2, Y.2 are not
-
 
 
 #Model validation
@@ -318,9 +286,6 @@ Box.test(res_adlm,
          lag = 15,
          type = "Ljung-Box") #Model is validated
 
-
 #test for Granger causality
 fit_adlm_small <- lm(sY.0 ~sY.1+sY.2)
 anova(fit_adlm, fit_adlm_small)   #We strongly reject that there is no Granger causality
-
-
