@@ -1,8 +1,8 @@
-#############################################################
-### R code for Advanced Time Series  Analysis Homework   ###
-###                    Jonathan Tonglet                  ###
-###            Professor : Christophe Croux              ###
-############################################################
+###########################################################
+### R code for Advanced Time Series  Analysis Homework  ###
+###                    Jonathan Tonglet                 ###
+###            Professor : Christophe Croux             ###
+###########################################################
 
 #Load  libraries
 library(ggplot2)
@@ -163,7 +163,6 @@ forecast <- function(ts,
   lines(lower, col = "blue")   
   
 }
-
 
 #Forecasts with model 2
 forecast(new_users_ts, model2, 24)
